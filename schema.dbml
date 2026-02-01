@@ -1,0 +1,84 @@
+Table users {
+  id uuid [pk]
+  email text [unique, not null]
+  password_hash text
+  auth_provider text
+  created_at timestamptz [default: `now()`]
+}
+
+Table health_profiles {
+  user_id uuid [pk, ref: > users.id]
+  age int
+  height_cm int
+  weight_kg float
+  goal text
+  activity_level text [note: 'low | medium | high']
+  created_at timestamptz [default: `now()`]
+}
+
+Table dietary_constraints {
+  user_id uuid [pk, ref: > users.id]
+  gluten_free boolean [default: false]
+  vegan boolean [default: false]
+  lactose_free boolean [default: false]
+  diabetic_safe boolean [default: false]
+}
+
+Table daily_health_logs {
+  user_id uuid [ref: > users.id]
+  log_date date [not null]
+  steps int
+  sleep_hours float
+  weight_kg float
+  mood int [note: '1–5']
+  stress int [note: '1–5']
+  symptoms text[]
+  created_at timestamptz [default: `now()`]
+
+  Indexes {
+    (user_id, log_date) [pk]
+    (user_id, log_date) [name: 'idx_daily_logs_user_date']
+  }
+}
+
+Table foods {
+  id uuid [pk]
+  name text [not null]
+  calories text
+  proteins int
+  carbs float
+  fat float
+  glycemic_index float
+  tags text[]
+}
+
+Table recommendations {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  recommendation_date date
+  recommended_foods uuid[]
+  avoided_foods uuid[]
+  explanation jsonb
+  confidence_score float
+  created_at timestamptz [default: `now()`]
+
+  Indexes {
+    (user_id, recommendation_date) [name: 'idx_recommendations_user_date']
+  }
+}
+
+Table alerts {
+  id uuid [pk]
+  user_id uuid [ref: > users.id]
+  alert_type text
+  message text
+  severity text
+  created_at timestamptz [default: `now()`]
+}
+
+Table admin_logs {
+  id uuid [pk]
+  action text
+  metadata jsonb
+  created_at timestamptz [default: `now()`]
+}
