@@ -1,23 +1,19 @@
 import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+
+import authRoutes from "./modules/auth/auth.routes";
+import healthRoutes from "./modules/health/health.routes";
 import { authenticate } from "./shared/middleware/auth.middleware";
 import { AuthenticatedRequest } from "./shared/middleware/auth.middleware";
-
-// Route imports
-import authRoutes from "./modules/auth/auth.routes";
 
 dotenv.config();
 
 const app: Application = express();
 
-// Parse JSON bodies
 app.use(express.json());
-
-// Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
 
-// CORS configuration (tighten later)
 app.use(
   cors({
     origin: true,
@@ -25,11 +21,12 @@ app.use(
   })
 );
 
+// Public health check
 app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "OK" });
 });
 
-
+// Protected test route
 app.get(
   "/protected",
   authenticate,
@@ -41,14 +38,18 @@ app.get(
   }
 );
 
+// 🚀 REAL ROUTES (MUST COME BEFORE 404)
 app.use("/auth", authRoutes);
+app.use("/health", healthRoutes);
 
+// ❌ 404 — MUST BE LAST
 app.use((_req: Request, res: Response) => {
   res.status(404).json({
     message: "Route not found"
   });
 });
 
+// ❌ Error handler — LAST LAST
 app.use(
   (err: Error, _req: Request, res: Response, _next: NextFunction) => {
     console.error("❌ Error:", err.message);
