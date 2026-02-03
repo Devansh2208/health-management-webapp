@@ -1,6 +1,6 @@
 import * as healthRepo from "./health.repository";
 import { DailyHealthLogInput } from "./health.types";
-
+import { analyzeTrends } from "../trends/trend.service";
 export const addOrUpdateLog = async (
   userId: string,
   log: DailyHealthLogInput
@@ -24,4 +24,14 @@ export const getLogs = async (
   }
 
   return await healthRepo.getLogsByDateRange(userId, from, to);
+};
+
+export const getHealthTrends = async (userId: string) => {
+  const logs = await healthRepo.getLastNDaysLogs(userId, 30);
+
+  if (logs.length < 7) {
+    throw new Error("Not enough data for trend analysis");
+  }
+
+  return analyzeTrends(logs);
 };

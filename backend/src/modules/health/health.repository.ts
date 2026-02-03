@@ -60,3 +60,20 @@ export const getLogsByDateRange = async (
 
   return result.rows;
 };
+export const getLastNDaysLogs = async (
+  userId: string,
+  days: number
+) => {
+  const result = await pool.query(
+    `
+    SELECT *
+    FROM daily_health_logs
+    WHERE user_id = $1
+    ORDER BY log_date DESC
+    LIMIT $2
+    `,
+    [userId, days]
+  );
+
+  return result.rows;
+};

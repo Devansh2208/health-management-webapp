@@ -37,3 +37,16 @@ export const getLogs = async (
     next(error);
   }
 };
+export const getTrends = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user!.userId;
+    const trends = await healthService.getHealthTrends(userId);
+    res.status(200).json(trends);
+  } catch (error) {
+    next(error);
+  }
+};

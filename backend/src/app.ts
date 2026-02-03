@@ -6,6 +6,7 @@ import authRoutes from "./modules/auth/auth.routes";
 import healthRoutes from "./modules/health/health.routes";
 import { authenticate } from "./shared/middleware/auth.middleware";
 import { AuthenticatedRequest } from "./shared/middleware/auth.middleware";
+import dietaryRoutes from "./modules/dietary/dietary.routes";
 
 dotenv.config();
 
@@ -38,18 +39,19 @@ app.get(
   }
 );
 
-// 🚀 REAL ROUTES (MUST COME BEFORE 404)
+// REAL ROUTES (MUST COME BEFORE 404)
 app.use("/auth", authRoutes);
 app.use("/health", healthRoutes);
+app.use("/dietary", dietaryRoutes);
 
-// ❌ 404 — MUST BE LAST
+// 404 — MUST BE LAST
 app.use((_req: Request, res: Response) => {
   res.status(404).json({
     message: "Route not found"
   });
 });
 
-// ❌ Error handler — LAST LAST
+//Error handler — LAST LAST
 app.use(
   (err: Error, _req: Request, res: Response, _next: NextFunction) => {
     console.error("❌ Error:", err.message);

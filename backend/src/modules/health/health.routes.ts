@@ -6,5 +6,6 @@ const router = Router();
 
 router.post("/log", authenticate, healthController.addLog);
 router.get("/logs", authenticate, healthController.getLogs);
+router.get("/trends", authenticate, healthController.getTrends);
 
 export default router;
